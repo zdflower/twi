@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width = device-width, initial-scale = 1">
+<title>twitch tv - FCC Project</title>
+<!-- online 
+<link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+-->
+<!-- offline -->
+<link rel='stylesheet prefetch' href='css/bootstrap.min.css'>
+<link rel="stylesheet" href="css/font-awesome.min.css"/>
+</head>
+<body>
+<div class="container"> 
+
+	<header class="page-header">
+		<h1> Who's streaming at Twitch TV right now? </h1>
+	</header>
+	
+	<div class="input-group" id="busqueda">
+		<span class="input-group-btn">
+			<button id="btnBuscador" class="btn btn-warning" type="button"><i class="fa fa-search"></i></button>
+		</span>
+		<input id="buscador" type="text" class="form-control">
+	</div>
+
+	<div>
+		<button id="all" class="btn btn-success">Todos</button>
+		<button id="str" class="btn btn-danger">Emitiendo</button>
+		<button id="off" class="btn btn-primary">Offline</button>
+	</div>
+	<div id="info"></div>
+
+</div>
+<!-- online 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+-->
+<!-- offline -->
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="main3.js"></script> 
+</body>
+</html>
