@@ -112,12 +112,12 @@ function generarHTML(i, estado){
   if (estado == "transmite"){
       var name = info[i].stream.name;
       var status = info[i].stream.status;
-      var url = info[i]._links.channel;
+      var url = info[i].stream.url;
       html = "<dl class='bg-danger'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
   } else if(estado == "notransmite"){
       var name = info[i].display_name;
       var status = "Offline";
-      var url = info[i]._links.channel;
+      var url = "https://www.twitch.tv/" + info[i].display_name.toLowerCase();
       html = "<dl class='bg-secondary'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
   } else{
       html = "<dl class='bg-danger'><dt>" + info[i].error + "</dt><dd>" + info[i].message + "</dd></dl>";
