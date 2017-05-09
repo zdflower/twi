@@ -136,20 +136,32 @@ function buscar(usuario){
 
   if (i == users.length){
     //no lo encontró, como en info hay uno más que en users, podemos acceder a un índice que es igual a la longitud de users
-    res = "<span class='bg-danger'>" + info[i].message + "</span>";
+    res = "<dl class='bg-danger'><dt>" + info[i].error + "</dt><dd>" + info[i].message + "</dd></dl>";
   } else{
     //chequear si transmite o no
     if (info[i].stream != null){
       //transmite
-      //res = "<span class='text-success nombre'" + info[i].stream.name + "</span>" + "<br/>" + "<span class="">" + info[i].stream.status +"</span>";
-      res = "<dl class='bg-success'> <dt>" + info[i].stream.name + "</dt> <dd>" + info[i].stream.status +"</dd> </dl>";
+      var name = info[i].stream.name;
+      var status = info[i].stream.status;
+      var url = info[i]._links.channel;
+      res = "<dl class='bg-danger'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
     } else{
       //no transmite
-      res = "<span class='bg-warning'>"+ info[i].display_name  + ": Offline </span>";
+      var name = info[i].display_name;
+      var status = "Offline";
+      var url = info[i]._links.channel;
+      res = "<dl class='bg-secondary'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
     }
   }
   return res;
 }
+
+//tal vez para no repetir tanto, debería separar la búsqueda del generar el código html para mostrar la información.
+//y que buscar devuelva el índice  y que luego en otra función hecha para generar el html tome como input ese índice y eso se use tanto para el caso de buscar como para el caso de mostrar los canales
+//lo tengo que solucionar de algún modo porque tengo código repetido exacto en dos lugares y tiene que ver con un índice, con si existe, si está transmitiendo o no, o no existe y a partir de eso generar el mismo html
+
+//tal vez podría ser así, usar el buscador en canales (aunque me parece que sería muy ineficiente) para cada usuario, y tener otra función para generar el html
+//aunque si en vez de ya tener la información, lo que hacemos es pedirla a la api, tiene más sentido eso de para cada búsqueda hacer un pedido y sería conceptualmente lo mismo, si tenés que ver el estado de la lista de usuarios dada, tenés que hacer una búsqueda o pedir información sobre cada uno como si la buscaras individualmente.
 
 function canales(){
   var i;
@@ -163,8 +175,9 @@ function canales(){
       //var logo = info[i].stream.logo;
       //mostrar en el div todos
       //también mostrar en el div emitiendo
-      $('#todos').append("<dl class='bg-danger'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>");
-      $('#on').append("<dl class='bg-danger'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>");
+      var html = "<dl class='bg-danger'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
+      $('#todos').append(html);
+      $('#on').append(html);
      } else{
       //no transmite
       var name = info[i].display_name;
@@ -172,8 +185,9 @@ function canales(){
       var url = info[i]._links.channel;
       //mostrar en el div todos
       //también mostrar en el div offline
-      $('#todos').append("<dl class='bg-secondary'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>");
-      $('#offline').append("<dl class='bg-secondary'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>");
+      var html = "<dl class='bg-secondary'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
+      $('#todos').append(html);
+      $('#offline').append(html);
     }
   }
   $('#todos').hide();
@@ -274,5 +288,14 @@ $(document).ready(function(){
     $('#offline').hide();
     $('#info').append(resultado);
     $('#info').show();
+  });
+
+  $('#buscador').on('keyup', function buscar(event){
+    //código de stackoverflow
+    //https://stackoverflow.com/questions/155188/trigger-a-button-click-with-javascript-on-the-enter-key-in-a-text-box
+    if(event.keyCode == 13){
+      //alert("enter");
+      $("#btnBuscador").click();
+    }
   });
 });
