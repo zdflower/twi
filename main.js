@@ -1,3 +1,46 @@
+$(document).ready(function(){
+  canales();
+
+  $('#all').on('click', function(){
+    $('#on').hide();
+    $('#offline').hide();
+    $('#info').hide();
+    $('#todos').show();
+  });
+
+  $('#str').on('click', function(){
+    $('#todos').hide();
+    $('#info').hide();
+    $('#offline').hide();
+    $('#on').show();    
+  });
+
+  $('#off').on('click', function(){
+    $('#todos').hide();
+    $('#on').hide();
+    $('#info').hide();
+    $('#offline').show();
+    });
+
+  $('#btnBuscador').on('click', function(){
+    var buscado = $('#buscador').val();
+    var resultado = buscar(buscado);
+    $('#todos').hide();
+    $('#on').hide();
+    $('#offline').hide();
+    $('#info').html(resultado);
+    $('#info').show();
+  });
+
+  $('#buscador').on('keyup', function buscar(event){
+    //código de stackoverflow
+    //https://stackoverflow.com/questions/155188/trigger-a-button-click-with-javascript-on-the-enter-key-in-a-text-box
+    if(event.keyCode == 13){
+      $("#btnBuscador").click();
+    }
+  });
+});
+
 var users = ["freecodecamp", "OgamingSC2", "esl_sc2", "noobs2ninjas"];
 
 var info = [
@@ -104,74 +147,17 @@ var info = [
   }
 ];
 
-function generarHTML(i, estado){
-  var html;
-  //si estado es online 1
-  //si estado es offline 0
-  //si estado es error -1
-  if (estado == "transmite"){
-      var name = info[i].stream.name;
-      var status = info[i].stream.status;
-      var url = info[i].stream.url;
-      html = "<dl class='bg-danger'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
-  } else if(estado == "notransmite"){
-      var name = info[i].display_name;
-      var status = "Offline";
-      var url = "https://www.twitch.tv/" + info[i].display_name.toLowerCase();
-      html = "<dl class='bg-secondary'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
-  } else{
-      html = "<dl class='bg-danger'><dt>" + info[i].error + "</dt><dd>" + info[i].message + "</dd></dl>";
-  }
-  return html;
-}
-
-
-//mejorar esta función buscar para no tener que usar break, usar un while y la condición apropiada para que corte y después chequear cuándo salió y a partir de ahí deducir qué pasó
-function buscar(usuario){
-  //buscar en users
-  //si lo encontramos, entonces usamos el índice para acceder a info
-    //y ahí tenemos que chequear si el stream es o no null
-  //si no accedemos al último de info que es el que tiene el mensaje de error, en este caso tiene el índice 4
-  // y ahí devolvemos el mensaje de error
-  var res;
-  var i;
-  for (i= 0; i < users.length; i++){
-    if (users[i].toLowerCase() === usuario.toLowerCase()){
-      break;
-    }
-  }
-  //si el índice es 4 entonces no lo encontró
-  //si el índice es menor que 4 entonces lo encontró
-  //en cualquier caso uso el índice para acceder a la información
-
-  if (i == users.length){
-    //no lo encontró, como en info hay uno más que en users, podemos acceder a un índice que es igual a la longitud de users
-    res = generarHTML(i, "error");
-  } else{
-    //chequear si transmite o no
-    if (info[i].stream != null){
-      //transmite
-      res = generarHTML(i, "transmite");
-    } else{
-      //no transmite
-      res = generarHTML(i, "notransmite");
-    }
-  }
-  return res;
-}
-
 function canales(){
   var i;
+  //ubicar la info en los correspondientes div
   for (i= 0; i < users.length; i++){
     //chequear si transmite o no
-    if (info[i].stream != null){
-      //transmite
-      html = generarHTML(i, "transmite");
+    if (transmitiendo(i)){
+      html = generarHTMLTransmite(i);
       $('#todos').append(html);
       $('#on').append(html);
      } else{
-      //no transmite
-      var html = generarHTML(i, "notransmite");
+      var html = generarHTMLNoTransmite(i);
       $('#todos').append(html);
       $('#offline').append(html);
     }
@@ -181,68 +167,56 @@ function canales(){
   $('#offline').hide();
 }
 
-function limpiarInfo(){
-     $('#info').html("");
-}
-
-function reconstruirInfo(){
-  $('#info').html('<div class="col-sm-4" id="todos"></div><div class="col-sm-4" id="on"></div><div class="col-sm-4" id="offline"></div>');
-}
-
-$(document).ready(function(){
-  //ubicar la información en los div correspondientes
-  canales();
-
-  $('#all').on('click', function(){
-    //la idea sería que cuando se clickea el botón, muestra el div todos y se ocultan los otros dos y también se oculta el info
-    $('#on').hide();
-    $('#offline').hide();
-    $('#info').hide();
-    $('#todos').show();
-  });
-
-  $('#str').on('click', function(){
-    //muestra el div on y se ocultan los otros dos y también se oculta el info
-    $('#todos').hide();
-    $('#info').hide();
-    $('#offline').hide();
-    $('#on').show();    
-  });
-
-  $('#off').on('click', function(){
-    // muestra el div offline y se ocultan los otros dos y también se oculta el info
-    $('#todos').hide();
-    $('#on').hide();
-    $('#info').hide();
-    $('#offline').show();
-    });
-
-  $('#btnBuscador').on('click', function(){
-    //obtener información de lo que se escribió en el cuadro de texto
-    //y buscar el usuario y la información correspondiente.
-
-    //por ejemplo si no está en la lista de los confirmados (para el local)
-    //o si la api responde con un error, mostramos el mensaje de error.
-
-    //si está mostramos si está transmitiendo ahora o no
-    var buscado = $('#buscador').val();
-    var resultado = buscar(buscado);
-    //alert(resultado);
-    limpiarInfo();
-    //además hay que ocultar todo el div info-botones
-    $('#todos').hide();
-    $('#on').hide();
-    $('#offline').hide();
-    $('#info').append(resultado);
-    $('#info').show();
-  });
-
-  $('#buscador').on('keyup', function buscar(event){
-    //código de stackoverflow
-    //https://stackoverflow.com/questions/155188/trigger-a-button-click-with-javascript-on-the-enter-key-in-a-text-box
-    if(event.keyCode == 13){
-      //alert("enter");
-      $("#btnBuscador").click();
+function buscar(nombre){
+  var res;
+  var i = 0;
+//queremos que siga contando mientras haya items por revisar y sean distintos a nombre
+  while (seguirBuscando(nombre, i)){
+    i++;
+  }
+  //Salimos del ciclo por una de dos razones: i llegó a la longitud del array y el nombre no está ahí o lo encontramos
+  
+  if (noExiste(i)){
+    //como en info hay uno más que en users, podemos acceder a un índice que es igual a la longitud de users
+    res = generarHTMLError(i);
+  } else{
+    if (transmitiendo(i)){
+      res = generarHTMLTransmite(i);
+    } else {
+      res = generarHTMLNoTransmite(i);
     }
-  });
-});
+  }
+  return res;
+}
+
+function transmitiendo(i){
+  return info[i].stream != null;
+}
+
+function noExiste(i){
+  return i == users.length;
+}
+
+function seguirBuscando(nombre, i){
+  //encapsula la condición del while en la función buscar
+  return i < users.length && users[i].toLowerCase() != nombre.toLowerCase();
+}
+
+function generarHTMLTransmite(i){
+      var name = info[i].stream.name;
+      var status = info[i].stream.status;
+      var url = info[i].stream.url;
+      return "<dl class='bg-danger'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
+}
+
+function generarHTMLNoTransmite(i){
+      var name = info[i].display_name;
+      var status = "Offline";
+      var url = "https://www.twitch.tv/" + info[i].display_name.toLowerCase();
+      return "<dl class='bg-secondary'> <dt> <a href='"+ url+"'>" +name + "</a></dt> <dd>" + status +"</dd> </dl>";
+}
+
+function generarHTMLError(i){
+      return "<dl class='bg-danger'><dt>" + info[i].error + "</dt><dd>" + info[i].message + "</dd></dl>";
+}
+
